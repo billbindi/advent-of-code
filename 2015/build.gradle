@@ -2,3 +2,8 @@ plugins {
   id 'java'
   id 'idea'
 }
+
+dependencies {
+  implementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+  implementation 'com.google.guava:guava:28.1-jre'
+}

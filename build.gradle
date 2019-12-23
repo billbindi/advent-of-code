@@ -1,3 +1,9 @@
 plugins {
   id 'idea'
 }
+
+subprojects {
+  repositories {
+    mavenCentral()
+  }
+}
