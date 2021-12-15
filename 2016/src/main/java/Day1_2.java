@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Day1_2 {
-    private static final String FILENAME = "2016/day1_1_input.txt";
+    private static final String FILENAME = "2016/day1_input.txt";
     private static final Set<Coordinate> COORDINATE_CACHE = new HashSet<>();
 
     public static void main(String[] args) throws IOException {

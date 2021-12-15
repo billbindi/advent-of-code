@@ -3,7 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Day1_1 {
-    private static final String FILENAME = "2016/day1_1_input.txt";
+    private static final String FILENAME = "2016/day1_input.txt";
 
     public static void main(String[] args) throws IOException {
         Path input = Path.of(FILENAME);
