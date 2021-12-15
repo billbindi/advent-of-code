@@ -25,6 +25,14 @@ public class Coordinate {
         y += amount;
     }
 
+    public int euclidDistance() {
+        return Math.abs(x) + Math.abs(y);
+    }
+
+    public double distance() {
+        return Math.sqrt((x * x) + (y * y));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
