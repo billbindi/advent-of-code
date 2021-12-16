@@ -1,3 +1,5 @@
+package util;
+
 import java.util.Objects;
 
 public class Coordinate {
@@ -48,7 +50,7 @@ public class Coordinate {
 
     @Override
     public String toString() {
-        return "Coordinate{" +
+        return "util.Coordinate{" +
                 "x=" + x +
                 ", y=" + y +
                 '}';
