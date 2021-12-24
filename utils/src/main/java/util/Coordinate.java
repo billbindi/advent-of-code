@@ -55,6 +55,11 @@ public class Coordinate {
         return new Coordinate(x, y + 1);
     }
 
+    // check if this coordinate is in bounds in a WxH bounding box
+    public boolean isInBounds(int width, int height) {
+        return x >= 0 && y >= 0 && x < width && y < height;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
