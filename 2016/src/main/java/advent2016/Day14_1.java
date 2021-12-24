@@ -3,6 +3,7 @@ package advent2016;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
+import util.Hashing;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
@@ -52,11 +53,7 @@ public class Day14_1 {
 
     private static String getHash(int index) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] input = (KEY + index).getBytes();
-            md.update(input);
-            return DatatypeConverter.printHexBinary(md.digest())
-                    .toLowerCase(Locale.ROOT);
+            return Hashing.md5(KEY + index).toLowerCase(Locale.ROOT);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("No MD5 hash possible", e);
         }
