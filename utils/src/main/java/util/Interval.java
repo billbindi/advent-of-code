@@ -27,8 +27,20 @@ public class Interval {
         return value >= low && value <= high;
     }
 
+    public boolean isEmpty() {
+        return this.equals(EMPTY);
+    }
+
     public List<Interval> split(long removal) {
         return split(new Interval(removal, removal));
+    }
+
+    public long size() {
+        if (isEmpty()) {
+            return 0;
+        } else {
+            return high - low + 1;
+        }
     }
 
     public List<Interval> split(Interval removal) {
@@ -37,7 +49,7 @@ public class Interval {
             return List.of(copy());
         } else if (removal.getLow() <= low && removal.getHigh() >= high) {
             // remove everything
-            return List.of(EMPTY);
+            return List.of();
         } else if (removal.getLow() <= low) {
             long newLow = removal.getHigh() + 1;
             return List.of(new Interval(newLow, high));
