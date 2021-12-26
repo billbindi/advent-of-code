@@ -4,30 +4,30 @@ import java.util.List;
 import java.util.Objects;
 
 public class Interval {
-    public static final Interval EMPTY = new Interval(Integer.MAX_VALUE, Integer.MIN_VALUE);
-    public static final Interval ALL = new Interval(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public static final Interval EMPTY = new Interval(Long.MAX_VALUE, Long.MIN_VALUE);
+    public static final Interval ALL = new Interval(Long.MIN_VALUE, Long.MAX_VALUE);
 
-    private final int low;
-    private final int high;
+    private final long low;
+    private final long high;
 
-    public Interval(int low, int high) {
+    public Interval(long low, long high) {
         this.low = low;
         this.high = high;
     }
 
-    public int getLow() {
+    public long getLow() {
         return low;
     }
 
-    public int getHigh() {
+    public long getHigh() {
         return high;
     }
 
-    public boolean isContained(int value) {
+    public boolean isContained(long value) {
         return value >= low && value <= high;
     }
 
-    public List<Interval> split(int removal) {
+    public List<Interval> split(long removal) {
         return split(new Interval(removal, removal));
     }
 
@@ -39,14 +39,14 @@ public class Interval {
             // remove everything
             return List.of(EMPTY);
         } else if (removal.getLow() <= low) {
-            int newLow = removal.getHigh() + 1;
+            long newLow = removal.getHigh() + 1;
             return List.of(new Interval(newLow, high));
         } else if (removal.getHigh() >= high) {
-            int newHigh = removal.getLow() - 1;
+            long newHigh = removal.getLow() - 1;
             return List.of(new Interval(low, newHigh));
         } else {
-            int newHigh = removal.getLow() - 1;
-            int newLow = removal.getHigh() + 1;
+            long newHigh = removal.getLow() - 1;
+            long newLow = removal.getHigh() + 1;
             return List.of(
                     new Interval(low, newHigh),
                     new Interval(newLow, high));
