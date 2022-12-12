@@ -3,3 +3,15 @@ include '2016'
 include '2017'
 
 include 'utils'
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('jackson-core', 'com.fasterxml.jackson.core:jackson-core:2.10.1')
+            library('jackson-databind', 'com.fasterxml.jackson.core:jackson-databind:2.10.1')
+            library('jackson-annotations', 'com.fasterxml.jackson.core:jackson-annotations:2.10.1')
+            library('guava', 'com.google.guava:guava:31.1-jre')
+            library('jaxb', 'javax.xml.bind:jaxb-api:2.3.0')
+        }
+    }
+}
