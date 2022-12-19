@@ -3,8 +3,8 @@ package util;
 import java.util.Objects;
 
 /**
- * Simple class for a coordinate on a grid. Assumes (0, 0) in top left.
- * In other words, increasing x moves left, increasing y moves down.
+ * Simple class for a coordinate on a plane. Increasing x moves right,
+ * increasing y moves up.
  */
 public class Coordinate {
     private int x;
@@ -31,14 +31,6 @@ public class Coordinate {
         y += amount;
     }
 
-    public int euclidDistance() {
-        return Math.abs(x) + Math.abs(y);
-    }
-
-    public double distance() {
-        return Math.sqrt((x * x) + (y * y));
-    }
-
     public Coordinate coordinateLeft() {
         return new Coordinate(x - 1, y);
     }
@@ -48,16 +40,11 @@ public class Coordinate {
     }
 
     public Coordinate coordinateUp() {
-        return new Coordinate(x, y - 1);
-    }
-
-    public Coordinate coordinateDown() {
         return new Coordinate(x, y + 1);
     }
 
-    // check if this coordinate is in bounds in a WxH bounding box
-    public boolean isInBounds(int width, int height) {
-        return x >= 0 && y >= 0 && x < width && y < height;
+    public Coordinate coordinateDown() {
+        return new Coordinate(x, y - 1);
     }
 
     @Override

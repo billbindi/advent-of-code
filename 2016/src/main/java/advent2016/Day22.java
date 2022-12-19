@@ -1,6 +1,6 @@
 package advent2016;
 
-import util.Coordinate;
+import util.PixelCoordinate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -88,7 +88,7 @@ public class Day22 {
                 int avail = Integer.parseInt(m.group("avail"));
                 int usePct = Integer.parseInt(m.group("usePct"));
 
-                grid[y][x] = new Node(new Coordinate(x, y), size, used, avail, usePct);
+                grid[y][x] = new Node(new PixelCoordinate(x, y), size, used, avail, usePct);
             } else {
                 throw new IllegalStateException("Could not parse node: " + node);
             }
@@ -97,13 +97,13 @@ public class Day22 {
     }
 
     private static class Node {
-        Coordinate coord;
+        PixelCoordinate coord;
         int size;
         int used;
         int avail;
         int usePct;
 
-        public Node(Coordinate coord, int size, int used, int avail, int usePct) {
+        public Node(PixelCoordinate coord, int size, int used, int avail, int usePct) {
             this.coord = coord;
             this.size = size;
             this.used = used;
@@ -111,7 +111,7 @@ public class Day22 {
             this.usePct = usePct;
         }
 
-        public Coordinate getCoord() {
+        public PixelCoordinate getCoord() {
             return coord;
         }
 

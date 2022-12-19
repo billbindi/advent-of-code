@@ -1,7 +1,7 @@
 package advent2017;
 
 import com.google.common.base.Strings;
-import util.Coordinate;
+import util.PixelCoordinate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,7 @@ public class Day19_1 {
     }
 
     private static String solve(char[][] routeMap) {
-        Coordinate coord = findStart(routeMap);
+        PixelCoordinate coord = findStart(routeMap);
         Direction direction = Direction.DOWN;
 
         StringBuilder path = new StringBuilder();
@@ -57,10 +57,10 @@ public class Day19_1 {
         return path.toString();
     }
 
-    private static Coordinate findStart(char[][] routeMap) {
+    private static PixelCoordinate findStart(char[][] routeMap) {
         for (int i = 0; i < routeMap[0].length; i++) {
             if (routeMap[0][i] == '|') {
-                return new Coordinate(0, i);
+                return new PixelCoordinate(0, i);
             }
         }
         throw new IllegalStateException("COULD NOT FIND START FOR TOP ROW: " + new String(routeMap[0]));
@@ -71,7 +71,7 @@ public class Day19_1 {
     // 'up' -> left
     // 'down' -> right
     // 'left' -> up
-    private static Coordinate nextCoordinate(Coordinate curr, Direction dir) {
+    private static PixelCoordinate nextCoordinate(PixelCoordinate curr, Direction dir) {
         switch (dir) {
             case RIGHT:
                 return curr.coordinateDown();
@@ -86,7 +86,7 @@ public class Day19_1 {
         }
     }
 
-    private static char charAt(char[][] arr, Coordinate coord) {
+    private static char charAt(char[][] arr, PixelCoordinate coord) {
         if (coord.isInBounds(SQUARE_SIZE, SQUARE_SIZE)) {
             return arr[coord.getX()][coord.getY()];
         } else {
@@ -95,12 +95,12 @@ public class Day19_1 {
     }
 
     // TODO: check bounds
-    private static CoordWithDir turn(char[][] routeMap, Coordinate coord, Direction direction) {
+    private static CoordWithDir turn(char[][] routeMap, PixelCoordinate coord, Direction direction) {
         switch (direction) {
             case LEFT:
             case RIGHT:
-                Coordinate up = nextCoordinate(coord, Direction.UP);
-                Coordinate down = nextCoordinate(coord, Direction.DOWN);
+                PixelCoordinate up = nextCoordinate(coord, Direction.UP);
+                PixelCoordinate down = nextCoordinate(coord, Direction.DOWN);
                 if (up.isInBounds(SQUARE_SIZE, SQUARE_SIZE) && (charAt(routeMap, up) == '|' || isLetter(charAt(routeMap, up)))) {
                     return new CoordWithDir(up, Direction.UP);
                 } else {
@@ -108,8 +108,8 @@ public class Day19_1 {
                 }
             case UP:
             case DOWN:
-                Coordinate right = nextCoordinate(coord, Direction.RIGHT);
-                Coordinate left = nextCoordinate(coord, Direction.LEFT);
+                PixelCoordinate right = nextCoordinate(coord, Direction.RIGHT);
+                PixelCoordinate left = nextCoordinate(coord, Direction.LEFT);
                 if (right.isInBounds(SQUARE_SIZE, SQUARE_SIZE) && (charAt(routeMap, right) == '-' || isLetter(charAt(routeMap, right)))) {
                     return new CoordWithDir(right, Direction.RIGHT);
                 } else {
@@ -129,10 +129,10 @@ public class Day19_1 {
     }
 
     private static class CoordWithDir {
-        final Coordinate coord;
+        final PixelCoordinate coord;
         final Direction dir;
 
-        private CoordWithDir(Coordinate coord, Direction dir) {
+        private CoordWithDir(PixelCoordinate coord, Direction dir) {
             this.coord = coord;
             this.dir = dir;
         }

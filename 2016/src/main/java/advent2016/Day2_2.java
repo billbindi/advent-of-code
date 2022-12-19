@@ -1,6 +1,6 @@
 package advent2016;
 
-import util.Coordinate;
+import util.PixelCoordinate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +27,7 @@ public class Day2_2 {
 
     private static String solve(List<String> content) {
         // start at '5'
-        Coordinate loc = new Coordinate(0, 2);
+        PixelCoordinate loc = new PixelCoordinate(0, 2);
         StringBuilder keys = new StringBuilder();
 
         for (String instruction : content) {
@@ -41,7 +41,7 @@ public class Day2_2 {
         return keys.toString();
     }
 
-    private static char getKey(Coordinate loc) {
+    private static char getKey(PixelCoordinate loc) {
         return getKey(loc.getX(), loc.getY());
     }
 
@@ -53,7 +53,7 @@ public class Day2_2 {
         }
     }
 
-    private static void move(Coordinate loc, char dir) {
+    private static void move(PixelCoordinate loc, char dir) {
         switch (dir) {
             case 'L':
                 if (getKey(loc.getX() - 1, loc.getY()) != 'X') {

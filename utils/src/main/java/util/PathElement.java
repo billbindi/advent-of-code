@@ -3,19 +3,19 @@ package util;
 import java.util.Objects;
 
 public class PathElement {
-    private final Coordinate coord;
+    private final PixelCoordinate coord;
     private final int distance;
 
-    public PathElement(Coordinate coord, int distance) {
+    public PathElement(PixelCoordinate coord, int distance) {
         this.coord = coord;
         this.distance = distance;
     }
 
-    public static PathElement start(Coordinate coord) {
+    public static PathElement start(PixelCoordinate coord) {
         return new PathElement(coord, 0);
     }
 
-    public Coordinate getCoord() {
+    public PixelCoordinate getCoord() {
         return coord;
     }
 

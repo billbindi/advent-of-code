@@ -1,7 +1,7 @@
 package advent2016;
 
 import com.google.common.collect.Collections2;
-import util.Coordinate;
+import util.PixelCoordinate;
 import util.PathElement;
 
 import java.io.IOException;
@@ -58,14 +58,14 @@ public class Day24_1 {
     }
 
     private static int[] shortestPathsForNum(Grid grid, int num, int total) {
-        Set<Coordinate> visited = new HashSet<>();
+        Set<PixelCoordinate> visited = new HashSet<>();
         Queue<PathElement> queue = new ArrayDeque<>();
         queue.add(PathElement.start(grid.getNumberCoordinate(num)));
         int[] shortest = new int[total];
         int numFound = 0;
         while (numFound < total && !queue.isEmpty()) {
             PathElement pathElement = queue.remove();
-            Coordinate coord = pathElement.getCoord();
+            PixelCoordinate coord = pathElement.getCoord();
             int distance = pathElement.getDistance();
             if (visited.contains(coord)) {
                 continue;
@@ -78,22 +78,22 @@ public class Day24_1 {
                 numFound++;
             }
 
-            Coordinate left = coord.coordinateLeft();
+            PixelCoordinate left = coord.coordinateLeft();
             if (grid.inBounds(left) && !grid.isWall(left)) {
                 queue.add(new PathElement(left, distance + 1));
             }
 
-            Coordinate right = coord.coordinateRight();
+            PixelCoordinate right = coord.coordinateRight();
             if (grid.inBounds(right) && !grid.isWall(right)) {
                 queue.add(new PathElement(right, distance + 1));
             }
 
-            Coordinate up = coord.coordinateUp();
+            PixelCoordinate up = coord.coordinateUp();
             if (grid.inBounds(up) && !grid.isWall(up)) {
                 queue.add(new PathElement(up, distance + 1));
             }
 
-            Coordinate down = coord.coordinateDown();
+            PixelCoordinate down = coord.coordinateDown();
             if (grid.inBounds(down) && !grid.isWall(down)) {
                 queue.add(new PathElement(down, distance + 1));
             }
@@ -116,7 +116,7 @@ public class Day24_1 {
                 } else {
                     int num = cell - '0';
                     grid.setCell(x, y, new Cell(false, num));
-                    grid.setNumber(num, new Coordinate(x, y));
+                    grid.setNumber(num, new PixelCoordinate(x, y));
                 }
             }
         }
@@ -125,7 +125,7 @@ public class Day24_1 {
 
     private static class Grid {
         Cell[][] grid;
-        Map<Integer, Coordinate> numbers = new HashMap<>();
+        Map<Integer, PixelCoordinate> numbers = new HashMap<>();
 
         Grid(int width, int height) {
             grid = new Cell[height][width];
@@ -135,29 +135,29 @@ public class Day24_1 {
             grid[y][x] = cell;
         }
 
-        void setNumber(int num, Coordinate coord) {
+        void setNumber(int num, PixelCoordinate coord) {
             numbers.put(num, coord);
         }
 
-        Cell cellAt(Coordinate coord) {
+        Cell cellAt(PixelCoordinate coord) {
             return grid[coord.getY()][coord.getX()];
         }
 
-        Coordinate getNumberCoordinate(int num) {
+        PixelCoordinate getNumberCoordinate(int num) {
             return numbers.get(num);
         }
 
-        boolean isWall(Coordinate coord) {
+        boolean isWall(PixelCoordinate coord) {
             return grid[coord.getY()][coord.getX()].isWall();
         }
 
-        boolean inBounds(Coordinate coord) {
+        boolean inBounds(PixelCoordinate coord) {
             int x = coord.getX();
             int y = coord.getY();
             return x >= 0 && x < grid[0].length && y >= 0 && y < grid.length;
         }
 
-        public Map<Integer, Coordinate> getNumbers() {
+        public Map<Integer, PixelCoordinate> getNumbers() {
             return numbers;
         }
 

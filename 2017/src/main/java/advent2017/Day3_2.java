@@ -1,6 +1,6 @@
 package advent2017;
 
-import util.Coordinate;
+import util.PixelCoordinate;
 
 public class Day3_2 {
 
@@ -13,10 +13,10 @@ public class Day3_2 {
         int size = getSize(input) + 2; // certainly big enough, plus some padding
         int[][] memory = new int[size][size];
         memory[size / 2][size / 2] = 1;
-        Coordinate center = new Coordinate(size / 2, size / 2);
+        PixelCoordinate center = new PixelCoordinate(size / 2, size / 2);
 
         int shell = 3; // which n*n layer
-        Coordinate coord = center.coordinateRight();
+        PixelCoordinate coord = center.coordinateRight();
         while (true) {
             // up on right
             for (int i = 0; i < shell - 2; i++) {
@@ -69,7 +69,7 @@ public class Day3_2 {
         return size;
     }
 
-    private static int writeSum(int[][] memory, Coordinate coord) {
+    private static int writeSum(int[][] memory, PixelCoordinate coord) {
         int sum = 0;
         // the cell itself will be 0, so we don't care about counting it
         for (int x = coord.getX() - 1; x <= coord.getX() + 1; x++) {

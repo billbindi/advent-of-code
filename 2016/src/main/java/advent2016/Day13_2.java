@@ -1,13 +1,13 @@
 package advent2016;
 
-import util.Coordinate;
+import util.PixelCoordinate;
 
 import java.util.*;
 
 public class Day13_2 {
     private final static int KEY = 1352;
     private final static int STEPS = 50;
-    private final static Set<Coordinate> VISITED = new HashSet<>();
+    private final static Set<PixelCoordinate> VISITED = new HashSet<>();
 
     public static void main(String[] args) {
         System.out.println(solve());
@@ -15,32 +15,32 @@ public class Day13_2 {
 
     private static int solve() {
         Queue<PathElement> queue = new ArrayDeque<>();
-        queue.add(new PathElement(new Coordinate(1, 1), 0));
+        queue.add(new PathElement(new PixelCoordinate(1, 1), 0));
         while (!queue.isEmpty()) {
             PathElement pathElement = queue.remove();
-            Coordinate coord = pathElement.getCoord();
+            PixelCoordinate coord = pathElement.getCoord();
             int distance = pathElement.getDistance();
             if (distance > STEPS) {
                 continue;
             }
 
             VISITED.add(coord);
-            Coordinate left = coord.coordinateLeft();
+            PixelCoordinate left = coord.coordinateLeft();
             if (isValid(left)) {
                 queue.add(new PathElement(left, distance + 1));
             }
 
-            Coordinate right = coord.coordinateRight();
+            PixelCoordinate right = coord.coordinateRight();
             if (isValid(right)) {
                 queue.add(new PathElement(right, distance + 1));
             }
 
-            Coordinate up = coord.coordinateUp();
+            PixelCoordinate up = coord.coordinateUp();
             if (isValid(up)) {
                 queue.add(new PathElement(up, distance + 1));
             }
 
-            Coordinate down = coord.coordinateDown();
+            PixelCoordinate down = coord.coordinateDown();
             if (isValid(down)) {
                 queue.add(new PathElement(down, distance + 1));
             }
@@ -48,7 +48,7 @@ public class Day13_2 {
         return VISITED.size();
     }
 
-    private static boolean isValid(Coordinate coord) {
+    private static boolean isValid(PixelCoordinate coord) {
         int x = coord.getX();
         int y = coord.getY();
         return x >= 0 && y >= 0 &&
@@ -75,15 +75,15 @@ public class Day13_2 {
     }
 
     private static class PathElement {
-        Coordinate coord;
+        PixelCoordinate coord;
         int distance;
 
-        public PathElement(Coordinate coord, int distance) {
+        public PathElement(PixelCoordinate coord, int distance) {
             this.coord = coord;
             this.distance = distance;
         }
 
-        public Coordinate getCoord() {
+        public PixelCoordinate getCoord() {
             return coord;
         }
 
