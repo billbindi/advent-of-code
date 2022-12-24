@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Day1_1 {
 
-    private final static String FILENAME = "2018/day1_input.txt";
+    private static final String FILENAME = "2018/day1_input.txt";
 
     public static void main(String[] args) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(FILENAME));
