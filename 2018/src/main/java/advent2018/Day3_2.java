@@ -80,6 +80,7 @@ public class Day3_2 {
                 }
             }
         }
+        //noinspection ConstantConditions
         return Iterables.getOnlyElement(ids);
     }
 
