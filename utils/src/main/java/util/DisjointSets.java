@@ -2,6 +2,8 @@ package util;
 
 import com.google.common.base.Preconditions;
 
+import java.util.Arrays;
+
 public class DisjointSets {
 
     private final int[] sets;
@@ -12,9 +14,7 @@ public class DisjointSets {
 
     public static DisjointSets withSize(int size) {
         int[] sets = new int[size];
-        for (int i = 0; i < size; i++) {
-            sets[i] = -1;
-        }
+        Arrays.fill(sets, -1);
         return new DisjointSets(sets);
     }
 

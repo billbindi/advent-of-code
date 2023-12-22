@@ -4,47 +4,29 @@ public enum Direction {
     RIGHT, LEFT, DOWN, UP;
 
     public Direction clockwise() {
-        switch (this) {
-            case RIGHT:
-                return DOWN;
-            case LEFT:
-                return UP;
-            case DOWN:
-                return LEFT;
-            case UP:
-                return RIGHT;
-            default:
-                throw new IllegalStateException("CANNOT TURN FROM UNKNOWN DIRECTION " + this);
-        }
+        return switch (this) {
+            case RIGHT -> DOWN;
+            case LEFT -> UP;
+            case DOWN -> LEFT;
+            case UP -> RIGHT;
+        };
     }
 
     public Direction counterclockwise() {
-        switch (this) {
-            case RIGHT:
-                return UP;
-            case LEFT:
-                return DOWN;
-            case DOWN:
-                return RIGHT;
-            case UP:
-                return LEFT;
-            default:
-                throw new IllegalStateException("CANNOT TURN FROM UNKNOWN DIRECTION " + this);
-        }
+        return switch (this) {
+            case RIGHT -> UP;
+            case LEFT -> DOWN;
+            case DOWN -> RIGHT;
+            case UP -> LEFT;
+        };
     }
 
     public Direction reverse() {
-        switch (this) {
-            case RIGHT:
-                return LEFT;
-            case LEFT:
-                return RIGHT;
-            case DOWN:
-                return UP;
-            case UP:
-                return DOWN;
-            default:
-                throw new IllegalStateException("CANNOT TURN FROM UNKNOWN DIRECTION " + this);
-        }
+        return switch (this) {
+            case RIGHT -> LEFT;
+            case LEFT -> RIGHT;
+            case DOWN -> UP;
+            case UP -> DOWN;
+        };
     }
 }

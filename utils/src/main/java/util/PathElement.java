@@ -1,26 +1,9 @@
 package util;
 
-import java.util.Objects;
-
-public class PathElement {
-    private final PixelCoordinate coord;
-    private final int distance;
-
-    public PathElement(PixelCoordinate coord, int distance) {
-        this.coord = coord;
-        this.distance = distance;
-    }
+public record PathElement(PixelCoordinate coord, int distance) {
 
     public static PathElement start(PixelCoordinate coord) {
         return new PathElement(coord, 0);
-    }
-
-    public PixelCoordinate getCoord() {
-        return coord;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     @Override
@@ -29,11 +12,6 @@ public class PathElement {
         if (o == null || getClass() != o.getClass()) return false;
         PathElement that = (PathElement) o;
         return distance == that.distance && coord.equals(that.coord);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(coord, distance);
     }
 
     @Override

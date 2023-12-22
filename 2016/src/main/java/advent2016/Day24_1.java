@@ -65,8 +65,8 @@ public class Day24_1 {
         int numFound = 0;
         while (numFound < total && !queue.isEmpty()) {
             PathElement pathElement = queue.remove();
-            PixelCoordinate coord = pathElement.getCoord();
-            int distance = pathElement.getDistance();
+            PixelCoordinate coord = pathElement.coord();
+            int distance = pathElement.distance();
             if (visited.contains(coord)) {
                 continue;
             }
