@@ -36,9 +36,7 @@ public class Day12_2 {
         for (long generation = 1; generation <= NUM_GENERATIONS; generation++) {
             state = step(state, rules);
             System.out.println("GENERATION NUMBER: " + generation);
-            if (state.endsWith("#")) {
-                System.out.println("UH-OH!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
+            System.out.println(countPots(state)); // try to see if there is ever a pattern
         }
 
         return countPots(state);
