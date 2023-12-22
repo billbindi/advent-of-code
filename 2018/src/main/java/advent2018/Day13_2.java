@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Day13_1 {
+public class Day13_2 {
 
     private static final String FILENAME = "2018/day13_input.txt";
     private static final int SIZE = 150;
@@ -20,7 +20,7 @@ public class Day13_1 {
 
     private static PixelCoordinate solve(List<String> lines) {
         Track track = parse(lines);
-        return findCollision(track);
+        return finalCart(track);
     }
 
     private static Track parse(List<String> lines) {
@@ -52,28 +52,33 @@ public class Day13_1 {
         return new Track(track, carts);
     }
 
-    private static PixelCoordinate findCollision(Track track) {
+    private static PixelCoordinate finalCart(Track track) {
         List<Cart> carts = track.carts();
-        while (true) {
+        while (carts.size() > 1) {
             carts.sort(Comparator.naturalOrder());
+            Set<Cart> collidingCarts = new HashSet<>();
             for (Cart cart : carts) {
-                cart.step(track.track());
-                PixelCoordinate location = cart.getLocation();
-                if (isCollision(carts, location)) {
-                    return location;
+                if (!collidingCarts.contains(cart)) {
+                    cart.step(track.track());
+                    Cart collidingCart = checkColliding(carts, cart);
+                    if (collidingCart != null) {
+                        collidingCarts.add(collidingCart);
+                        collidingCarts.add(cart);
+                    }
                 }
             }
+            carts.removeAll(collidingCarts);
         }
+        return carts.get(0).getLocation();
     }
 
-    private static boolean isCollision(List<Cart> carts, PixelCoordinate location) {
-        int cartCount = 0;
-        for (Cart cart : carts) {
-            if (cart.getLocation().equals(location)) {
-                cartCount++;
+    private static Cart checkColliding(List<Cart> carts, Cart cart) {
+        for (Cart check : carts) {
+            if (!cart.equals(check) && cart.getLocation().equals(check.getLocation())) {
+                return check;
             }
         }
-        return cartCount > 1;
+        return null;
     }
 
     private record Track(char[][] track, List<Cart> carts) {}
