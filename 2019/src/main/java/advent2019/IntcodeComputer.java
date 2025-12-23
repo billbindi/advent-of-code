@@ -6,17 +6,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class IntcodeComputer {
-    // opcodes
-    private static final int ADDITION = 1;
-    private static final int MULTIPLICATION = 2;
-    private static final int HALT = 99;
-
-    private final List<Integer> program;
+    private final List<Integer> memory;
     private boolean isComplete = false;
     private boolean isError = false;
 
-    public IntcodeComputer(List<Integer> program) {
-        this.program = program;
+    public IntcodeComputer(List<Integer> initialMemory) {
+        this.memory = initialMemory;
     }
 
     public static IntcodeComputer fromLine(String line) {
@@ -27,16 +22,16 @@ public class IntcodeComputer {
     // modifies IN PLACE
     public boolean run() {
         int pointer = 0;
-        while (!isComplete && pointer < program.size()) {
+        while (!isComplete && pointer < memory.size()) {
             int opCode = getValue(pointer);
-            Optional<Operation> op = Operation.fromOpCode(opCode);
-            if (op.isPresent()) {
-                op.get().perform(this, pointer);
+            Optional<Instruction> instruction = Instruction.fromOpCode(opCode);
+            if (instruction.isPresent()) {
+                // move pointer by proper amount for operation
+                pointer = instruction.get().perform(this, pointer);
             } else {
-                // unrecognized op means something went wrong
+                // unrecognized instruction means something went wrong
                 markCompleteWithError();
             }
-            pointer += 4;
         }
 
         // if we somehow didn't reach a complete state, mark complete now with error
@@ -47,7 +42,7 @@ public class IntcodeComputer {
     }
 
     public int getValue(int index) {
-        return program.get(index);
+        return memory.get(index);
     }
 
     public int getValueAtIndexValue(int index) {
@@ -55,17 +50,17 @@ public class IntcodeComputer {
     }
 
     public List<Integer> getRawProgram() {
-        return program;
+        return memory;
     }
 
     // accessible for testing
     void setValue(int index, int value) {
-        program.set(index, value);
+        memory.set(index, value);
     }
 
     // check the pointer is in a spot to allow for an operation
-    private boolean checkOperation(int pointerIndex, int opSize) {
-        return program.size() >= pointerIndex + opSize;
+    private boolean checkOperation(int pointerIndex, int instructionSize) {
+        return memory.size() > pointerIndex + instructionSize;
     }
 
     private void markComplete() {
@@ -77,8 +72,8 @@ public class IntcodeComputer {
         isError = true;
     }
 
-    public enum Operation {
-        ADDITION(1, 3) {
+    public enum Instruction {
+        ADDITION(1, 4) {
             @Override
             public void performOperation(IntcodeComputer computer, int index) {
                 int operand1 = computer.getValueAtIndexValue(index + 1);
@@ -87,7 +82,7 @@ public class IntcodeComputer {
                 computer.setValue(operand3, operand1 + operand2);
             }
         },
-        MULTIPLICATION(2, 3) {
+        MULTIPLICATION(2, 4) {
             @Override
             public void performOperation(IntcodeComputer computer, int index) {
                 int operand1 = computer.getValueAtIndexValue(index + 1);
@@ -96,7 +91,7 @@ public class IntcodeComputer {
                 computer.setValue(operand3, operand1 * operand2);
             }
         },
-        HALT(99, 0) {
+        HALT(99, 1) {
             @Override
             public void performOperation(IntcodeComputer computer, int index) {
                 computer.markComplete();
@@ -104,25 +99,26 @@ public class IntcodeComputer {
         };
 
         private final int opCode;
-        private final int neededOperands;
+        private final int instructionLength;
 
-        Operation(int opCode, int neededOperands) {
+        Instruction(int opCode, int instructionLength) {
             this.opCode = opCode;
-            this.neededOperands = neededOperands;
+            this.instructionLength = instructionLength;
         }
 
         public abstract void performOperation(IntcodeComputer computer, int index);
 
-        public void perform(IntcodeComputer computer, int index) {
-            if (computer.checkOperation(index, neededOperands)) {
+        public int perform(IntcodeComputer computer, int index) {
+            if (computer.checkOperation(index, instructionLength)) {
                 performOperation(computer, index);
             } else {
                 computer.markCompleteWithError();
             }
+            return index + instructionLength;
         }
 
-        public static Optional<Operation> fromOpCode(int opCode) {
-            for (Operation op : Operation.values()) {
+        public static Optional<Instruction> fromOpCode(int opCode) {
+            for (Instruction op : Instruction.values()) {
                 if (op.opCode == opCode) {
                     return Optional.of(op);
                 }
