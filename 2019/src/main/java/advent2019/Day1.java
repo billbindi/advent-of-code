@@ -1,7 +1,5 @@
 package advent2019;
 
-import com.google.common.base.Preconditions;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +11,7 @@ public class Day1 {
 
     public static void main(String[] args) throws IOException {
         System.out.println(part1(Files.lines(INPUT_PATH)));
-        // System.out.println(part2(Files.lines(INPUT_PATH)));
+        System.out.println(part2(Files.lines(INPUT_PATH)));
     }
 
     private static int part1(Stream<String> lines) {
@@ -21,7 +19,20 @@ public class Day1 {
     }
 
     private static int fuelNeeded(int mass) {
-        Preconditions.checkArgument(mass > 8, "Will have negative fuel needed!");
         return (mass / 3) - 2;
+    }
+
+    private static int part2(Stream<String> lines) {
+        return lines.mapToInt(Integer::parseInt).map(Day1::fuelNeededIterative).sum();
+    }
+
+    private static int fuelNeededIterative(int mass) {
+        int addedFuel = fuelNeeded(mass);
+        int totalFuel = 0;
+        while (addedFuel > 0) {
+            totalFuel += addedFuel;
+            addedFuel = fuelNeeded(addedFuel);
+        }
+        return totalFuel;
     }
 }
