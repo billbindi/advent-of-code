@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class Day1 {
+public final class Day1 {
     private static final String INPUT_FILENAME = "2019/day1_input.txt";
     private static final Path INPUT_PATH = Path.of(INPUT_FILENAME);
 
