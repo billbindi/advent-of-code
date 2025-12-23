@@ -96,12 +96,12 @@ public class Day6_1 {
     // to make it worth the effort.
     @Nullable
     private static Coordinate findClosest(List<Coordinate> coordinates, Coordinate target) {
-        coordinates.sort(Comparator.comparingInt(coordinate -> coordinate.manhattenDistanceToCoordinate(target)));
+        coordinates.sort(Comparator.comparingInt(coordinate -> coordinate.manhattanDistanceToCoordinate(target)));
 
         // check for ties
         Coordinate first = coordinates.get(0);
         Coordinate second = coordinates.get(1);
-        if (first.manhattenDistanceToCoordinate(target) == second.manhattenDistanceToCoordinate(target)) {
+        if (first.manhattanDistanceToCoordinate(target) == second.manhattanDistanceToCoordinate(target)) {
             return null;
         } else {
             return first;

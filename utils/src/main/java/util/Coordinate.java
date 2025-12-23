@@ -47,7 +47,7 @@ public class Coordinate {
         return new Coordinate(x, y - 1);
     }
 
-    public int manhattenDistanceToCoordinate(Coordinate other) {
+    public int manhattanDistanceToCoordinate(Coordinate other) {
         if (other == null) {
             return Integer.MAX_VALUE;
         } else {

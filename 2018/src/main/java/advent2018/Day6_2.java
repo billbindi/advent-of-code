@@ -79,7 +79,7 @@ public class Day6_2 {
 
     private static boolean isSafe(List<Coordinate> coordinates, Coordinate target) {
         int totalDistance = coordinates.stream()
-                .mapToInt(coord -> coord.manhattenDistanceToCoordinate(target))
+                .mapToInt(coord -> coord.manhattanDistanceToCoordinate(target))
                 .sum();
         return totalDistance < TOLERANCE;
     }
