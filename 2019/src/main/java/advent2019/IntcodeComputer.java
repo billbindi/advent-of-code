@@ -2,6 +2,7 @@ package advent2019;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class IntcodeComputer {
@@ -28,27 +29,12 @@ public class IntcodeComputer {
         int pointer = 0;
         while (!isComplete && pointer < program.size()) {
             int opCode = getValue(pointer);
-            switch (opCode) {
-                case ADDITION:
-                    if (checkOperation(pointer, 3)) {
-                        setValue(getValue(pointer + 3), getValue(getValue(pointer + 1)) + getValue(getValue(pointer + 2)));
-                    } else {
-                        markCompleteWithError();
-                    }
-                    break;
-                case MULTIPLICATION:
-                    if (checkOperation(pointer, 3)) {
-                        setValue(getValue(pointer + 3), getValue(getValue(pointer + 1)) * getValue(getValue(pointer + 2)));
-                    } else {
-                        markCompleteWithError();
-                    }
-                    break;
-                case HALT:
-                    markComplete();
-                    break;
-                default:
-                    // any other op code is an error state
-                    markCompleteWithError();
+            Optional<Operation> op = Operation.fromOpCode(opCode);
+            if (op.isPresent()) {
+                op.get().perform(this, pointer);
+            } else {
+                // unrecognized op means something went wrong
+                markCompleteWithError();
             }
             pointer += 4;
         }
@@ -62,6 +48,10 @@ public class IntcodeComputer {
 
     public int getValue(int index) {
         return program.get(index);
+    }
+
+    public int getValueAtIndexValue(int index) {
+        return getValue(getValue(index));
     }
 
     public List<Integer> getRawProgram() {
@@ -85,5 +75,60 @@ public class IntcodeComputer {
     private void markCompleteWithError() {
         isComplete = true;
         isError = true;
+    }
+
+    public enum Operation {
+        ADDITION(1, 3) {
+            @Override
+            public void performOperation(IntcodeComputer computer, int index) {
+                int operand1 = computer.getValueAtIndexValue(index + 1);
+                int operand2 = computer.getValueAtIndexValue(index + 2);
+                int operand3 = computer.getValue(index + 3);
+                computer.setValue(operand3, operand1 + operand2);
+            }
+        },
+        MULTIPLICATION(2, 3) {
+            @Override
+            public void performOperation(IntcodeComputer computer, int index) {
+                int operand1 = computer.getValueAtIndexValue(index + 1);
+                int operand2 = computer.getValueAtIndexValue(index + 2);
+                int operand3 = computer.getValue(index + 3);
+                computer.setValue(operand3, operand1 * operand2);
+            }
+        },
+        HALT(99, 0) {
+            @Override
+            public void performOperation(IntcodeComputer computer, int index) {
+                computer.markComplete();
+            }
+        };
+
+        private final int opCode;
+        private final int neededOperands;
+
+        Operation(int opCode, int neededOperands) {
+            this.opCode = opCode;
+            this.neededOperands = neededOperands;
+        }
+
+        public abstract void performOperation(IntcodeComputer computer, int index);
+
+        public void perform(IntcodeComputer computer, int index) {
+            if (computer.checkOperation(index, neededOperands)) {
+                performOperation(computer, index);
+            } else {
+                computer.markCompleteWithError();
+            }
+        }
+
+        public static Optional<Operation> fromOpCode(int opCode) {
+            for (Operation op : Operation.values()) {
+                if (op.opCode == opCode) {
+                    return Optional.of(op);
+                }
+            }
+            System.err.println("No operation with code " + opCode);
+            return Optional.empty();
+        }
     }
 }
