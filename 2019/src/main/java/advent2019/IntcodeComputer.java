@@ -19,6 +19,12 @@ public class IntcodeComputer {
         return new IntcodeComputer(program);
     }
 
+    public boolean runWithInput(int noun, int verb) {
+        setValue(1, noun);
+        setValue(2, verb);
+        return run();
+    }
+
     // modifies IN PLACE
     public boolean run() {
         int pointer = 0;
@@ -43,6 +49,10 @@ public class IntcodeComputer {
 
     public int getValue(int index) {
         return memory.get(index);
+    }
+
+    public int getOutput() {
+        return getValue(0);
     }
 
     public int getValueAtIndexValue(int index) {

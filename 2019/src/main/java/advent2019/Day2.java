@@ -16,10 +16,8 @@ public class Day2 {
 
     private static int part1(Stream<String> lines) {
         IntcodeComputer computer = IntcodeComputer.fromLine(lines.findFirst().orElseThrow());
-        computer.setValue(1, 12);
-        computer.setValue(2, 2);
-        computer.run();
-        return computer.getValue(0);
+        computer.runWithInput(12, 2);
+        return computer.getOutput();
     }
 
     private static int part2(Stream<String> lines) {
