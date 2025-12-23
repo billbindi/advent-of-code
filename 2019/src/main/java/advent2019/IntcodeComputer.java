@@ -1,21 +1,33 @@
 package advent2019;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class IntcodeComputer {
+    private final ImmutableList<Integer> initialMemory;
     private final List<Integer> memory;
-    private boolean isComplete = false;
-    private boolean isError = false;
+    private boolean isComplete;
+    private boolean isError;
 
     public IntcodeComputer(List<Integer> initialMemory) {
-        this.memory = initialMemory;
+        this.initialMemory = ImmutableList.copyOf(initialMemory);
+        this.memory = new ArrayList<>();
+        reset();
+    }
+
+    public void reset() {
+        memory.clear();
+        memory.addAll(initialMemory);
+        isComplete = false;
+        isError = false;
     }
 
     public static IntcodeComputer fromLine(String line) {
-        List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).toList();
         return new IntcodeComputer(program);
     }
 
@@ -25,7 +37,7 @@ public class IntcodeComputer {
         return run();
     }
 
-    // modifies IN PLACE
+    // only works on 'memory' variable to keep initial state constant
     public boolean run() {
         int pointer = 0;
         while (!isComplete && pointer < memory.size()) {

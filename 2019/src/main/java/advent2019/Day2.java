@@ -9,6 +9,8 @@ public class Day2 {
     private static final String INPUT_FILENAME = "2019/day2_input.txt";
     private static final Path INPUT_PATH = Path.of(INPUT_FILENAME);
 
+    private static final int PART_2_TARGET = 19690720;
+
     public static void main(String[] args) throws IOException {
         System.out.println(part1(Files.lines(INPUT_PATH)));
         System.out.println(part2(Files.lines(INPUT_PATH)));
@@ -21,7 +23,19 @@ public class Day2 {
     }
 
     private static int part2(Stream<String> lines) {
-        return 0;
+        String line = lines.findFirst().orElseThrow();
+        IntcodeComputer computer = IntcodeComputer.fromLine(line);
+        for (int noun = 0; noun <= 99; noun++) {
+            for (int verb = 0; verb <= 99; verb++) {
+                computer.reset();
+                computer.runWithInput(noun, verb);
+                if (computer.getOutput() == PART_2_TARGET) {
+                    return (100 *  noun) + verb;
+                }
+            }
+        }
+        // not found
+        return -1;
     }
 
 }
