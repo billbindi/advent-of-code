@@ -22,6 +22,9 @@ public final class Day5 {
     }
 
     private static int part2(Stream<String> lines) {
-        return 0;
+        IntcodeComputer computer = IntcodeComputer.fromLine(lines.findFirst().orElseThrow());
+        computer.setInput(5);
+        computer.run();
+        return computer.getOutput();
     }
 }

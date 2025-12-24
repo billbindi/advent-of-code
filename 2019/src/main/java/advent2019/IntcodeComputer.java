@@ -107,39 +107,82 @@ public class IntcodeComputer {
     public enum Instruction {
         ADDITION(1, 4) {
             @Override
-            public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 int operand1 = getValue(computer, index + 1, parameterModes[0]);
                 int operand2 = getValue(computer, index + 2, parameterModes[1]);
                 int operand3 = computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 + operand2);
+                return index + 4;
             }
         },
         MULTIPLICATION(2, 4) {
             @Override
-            public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 int operand1 = getValue(computer, index + 1, parameterModes[0]);
                 int operand2 = getValue(computer, index + 2, parameterModes[1]);
                 int operand3 = computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 * operand2);
+                return index + 4;
             }
         },
         INPUT(3, 2) {
             @Override
-            public void performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
+            public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
                 int operand1 = computer.getValue(index + 1);
                 computer.setValue(operand1, computer.getInput());
+                return index + 2;
             }
         },
         OUTPUT(4, 2) {
             @Override
-            public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 System.out.println("OUTPUT: " + getValue(computer, index + 1, parameterModes[0]));
+                return index + 2;
+            }
+        },
+        JUMP_IF_TRUE(5, 3) {
+            @Override
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                return operand1 == 0 ? index + 3 : operand2;
+            }
+        },
+        JUMP_IF_FALSE(6, 3) {
+            @Override
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                return operand1 == 0 ? operand2 : index + 3;
+            }
+        },
+        LESS_THAN(7, 4) {
+            @Override
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = computer.getValue(index + 3);
+                int result = operand1 < operand2 ? 1 : 0;
+                computer.setValue(operand3, result);
+                return index + 4;
+            }
+        },
+        EQUALS(8, 4) {
+            @Override
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = computer.getValue(index + 3);
+                int result = operand1 == operand2 ? 1 : 0;
+                computer.setValue(operand3, result);
+                return index + 4;
             }
         },
         HALT(99, 1) {
             @Override
-            public void performOperation(IntcodeComputer computer, int _index, int[] _parameterModes) {
+            public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
                 computer.markComplete();
+                return index + 1;
             }
         };
 
@@ -151,15 +194,15 @@ public class IntcodeComputer {
             this.instructionLength = instructionLength;
         }
 
-        public abstract void performOperation(IntcodeComputer computer, int index, int[] parameterModes);
+        public abstract int performOperation(IntcodeComputer computer, int index, int[] parameterModes);
 
         public int perform(IntcodeComputer computer, int index, int[] parameterModes) {
             if (computer.checkOperation(index, instructionLength)) {
-                performOperation(computer, index, parameterModes);
+                return performOperation(computer, index, parameterModes);
             } else {
                 computer.markCompleteWithError();
+                return index; // don't move, I guess? doesn't actually matter
             }
-            return index + instructionLength;
         }
 
         private static int getValue(IntcodeComputer computer, int index, int mode) {
