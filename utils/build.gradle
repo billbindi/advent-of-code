@@ -4,9 +4,12 @@ plugins {
 }
 
 dependencies {
-  implementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
-  implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
-  implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.1'
-  implementation 'com.google.guava:guava:28.1-jre'
-  implementation 'javax.xml.bind:jaxb-api:2.3.0'
+  implementation(libs.jackson.core)
+  implementation(libs.jackson.databind)
+  implementation(libs.jackson.annotations)
+  implementation(libs.guava)
+  implementation(libs.jaxb)
+
+  annotationProcessor(libs.immutables.value)
+  compileOnly(libs.immutables.value.annotations)
 }
