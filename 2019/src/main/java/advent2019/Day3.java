@@ -68,6 +68,31 @@ public final class Day3 {
         return -1;
     }
 
+    private static int part2(Stream<String> lines) {
+        // build list of wires
+        List<Wire> wires = lines.map(Day3::buildWire).toList();
+
+        // find nearest intersection point by min sum of steps. using arbitrary
+        // bounding box, otherwise would need to track min/max x/y to know the
+        // proper box to use here, which is not worth the effort.
+        int minSteps = Integer.MAX_VALUE;
+        for (int x = -5000;  x <= 5000; x++) {
+            for (int y = -5000; y <= 5000; y++) {
+                // skip the origin
+                if (x != 0 || y != 0) {
+                    Coordinate test = new Coordinate(x, y);
+                    if (wires.stream().allMatch(wire -> wire.contains(test))) {
+                        int totalSteps = wires.stream().mapToInt(wire -> wire.steps(test)).sum();
+                        if (totalSteps < minSteps) {
+                            minSteps = totalSteps;
+                        }
+                    }
+                }
+            }
+        }
+        return minSteps;
+    }
+
     private static Wire buildWire(String line) {
         Wire wire = new Wire();
         Coordinate tracker = new Coordinate(0, 0);
@@ -97,10 +122,6 @@ public final class Day3 {
             steps += length;
         }
         return wire;
-    }
-
-    private static int part2(Stream<String> lines) {
-        return 0;
     }
 
     private static final class Wire {
