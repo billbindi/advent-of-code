@@ -18,7 +18,7 @@ public final class Day2 {
 
     private static int part1(Stream<String> lines) {
         IntcodeComputer computer = IntcodeComputer.fromLine(lines.findFirst().orElseThrow());
-        computer.runWithInput(12, 2);
+        computer.runWithNounVerb(12, 2);
         return computer.getOutput();
     }
 
@@ -28,7 +28,7 @@ public final class Day2 {
         for (int noun = 0; noun <= 99; noun++) {
             for (int verb = 0; verb <= 99; verb++) {
                 computer.reset();
-                computer.runWithInput(noun, verb);
+                computer.runWithNounVerb(noun, verb);
                 if (computer.getOutput() == PART_2_TARGET) {
                     return (100 *  noun) + verb;
                 }

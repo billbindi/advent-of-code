@@ -33,9 +33,11 @@ public class IntcodeComputer {
         return new IntcodeComputer(program);
     }
 
+    public void setInput(int input) {
+        this.input = Optional.of(input);
+    }
 
-
-    public boolean runWithInput(int noun, int verb) {
+    public boolean runWithNounVerb(int noun, int verb) {
         setValue(1, noun);
         setValue(2, verb);
         return run();
@@ -106,8 +108,8 @@ public class IntcodeComputer {
         ADDITION(1, 4) {
             @Override
             public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = computer.getValueAtIndexValue(index + 1);
-                int operand2 = computer.getValueAtIndexValue(index + 2);
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
                 int operand3 = computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 + operand2);
             }
@@ -115,8 +117,8 @@ public class IntcodeComputer {
         MULTIPLICATION(2, 4) {
             @Override
             public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = computer.getValueAtIndexValue(index + 1);
-                int operand2 = computer.getValueAtIndexValue(index + 2);
+                int operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = getValue(computer, index + 2, parameterModes[1]);
                 int operand3 = computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 * operand2);
             }
@@ -131,12 +133,12 @@ public class IntcodeComputer {
         OUTPUT(4, 2) {
             @Override
             public void performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                System.out.println("OUTPUT: " + computer.getValue(index + 1));
+                System.out.println("OUTPUT: " + getValue(computer, index + 1, parameterModes[0]));
             }
         },
         HALT(99, 1) {
             @Override
-            public void performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
+            public void performOperation(IntcodeComputer computer, int _index, int[] _parameterModes) {
                 computer.markComplete();
             }
         };
@@ -160,7 +162,7 @@ public class IntcodeComputer {
             return index + instructionLength;
         }
 
-        private int getValue(IntcodeComputer computer, int index, int mode) {
+        private static int getValue(IntcodeComputer computer, int index, int mode) {
             return switch (mode) {
                 case 0 -> computer.getValueAtIndexValue(index);
                 case 1 -> computer.getValue(index);
@@ -183,8 +185,6 @@ public class IntcodeComputer {
         public static OpCode fromValue(int value) {
                 if (value < 0) {
                     throw new IllegalArgumentException("Invalid opcode " + value);
-                } else if (value < 100) {
-                    return new OpCode(value, new int[]{});
                 } else {
                     int opCode = value % 100;
                     int[] parameterModes = getParameterModes(value / 100);
