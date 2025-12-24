@@ -7,9 +7,9 @@ import util.Direction;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public final class Day3 {
@@ -71,28 +71,30 @@ public final class Day3 {
     private static Wire buildWire(String line) {
         Wire wire = new Wire();
         Coordinate tracker = new Coordinate(0, 0);
+        int steps = 0;
         Iterable<String> paths = Splitter.on(',').split(line);
         for(String path : paths) {
             int length =  Integer.parseInt(path.substring(1));
             tracker = switch (path.charAt(0)) {
                 case 'L' -> {
-                    wire.addAll(tracker, Direction.LEFT, length);
+                    wire.addAll(tracker, Direction.LEFT, length, steps);
                     yield new Coordinate(tracker.getX() - length, tracker.getY());
                 }
                 case 'R' -> {
-                    wire.addAll(tracker, Direction.RIGHT, length);
+                    wire.addAll(tracker, Direction.RIGHT, length, steps);
                     yield new Coordinate(tracker.getX() + length, tracker.getY());
                 }
                 case 'U' -> {
-                    wire.addAll(tracker, Direction.UP, length);
+                    wire.addAll(tracker, Direction.UP, length, steps);
                     yield new Coordinate(tracker.getX(), tracker.getY() + length);
                 }
                 case 'D' -> {
-                    wire.addAll(tracker, Direction.DOWN, length);
+                    wire.addAll(tracker, Direction.DOWN, length, steps);
                     yield new Coordinate(tracker.getX(), tracker.getY() - length);
                 }
                 default -> throw new IllegalArgumentException("Invalid input: " + path);
             };
+            steps += length;
         }
         return wire;
     }
@@ -102,9 +104,9 @@ public final class Day3 {
     }
 
     private static final class Wire {
-        private final Set<Coordinate> coordinates = new HashSet<>();
+        private final Map<Coordinate, Integer> coordinates = new HashMap<>();
 
-        public void addAll(Coordinate start, Direction direction, int amount) {
+        public void addAll(Coordinate start, Direction direction, int length, int startingSteps) {
             int addX = switch (direction) {
                 case LEFT -> -1;
                 case RIGHT -> 1;
@@ -117,19 +119,19 @@ public final class Day3 {
             };
 
             // include start, though not strictly speaking necessary
-            for (int count = 0; count <= amount; count++) {
+            for (int count = 0; count <= length; count++) {
                 int x = start.getX() + (count * addX);
                 int y = start.getY() + (count * addY);
-                coordinates.add(new Coordinate(x, y));
+                coordinates.putIfAbsent(new Coordinate(x, y), startingSteps + count);
             }
         }
 
         public boolean contains(Coordinate coordinate) {
-            return coordinates.contains(coordinate);
+            return coordinates.containsKey(coordinate);
         }
 
-        public boolean contains(int x, int y) {
-            return contains(new Coordinate(x, y));
+        public int steps(Coordinate coordinate) {
+            return coordinates.getOrDefault(coordinate, -1);
         }
     }
 }
