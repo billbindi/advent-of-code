@@ -12,6 +12,7 @@ public class IntcodeComputer {
     private final List<Integer> memory;
     private boolean isComplete;
     private boolean isError;
+    private Optional<Integer> input = Optional.empty();
 
     public IntcodeComputer(List<Integer> initialMemory) {
         this.initialMemory = ImmutableList.copyOf(initialMemory);
@@ -24,12 +25,15 @@ public class IntcodeComputer {
         memory.addAll(initialMemory);
         isComplete = false;
         isError = false;
+        input = Optional.empty();
     }
 
     public static IntcodeComputer fromLine(String line) {
         List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).toList();
         return new IntcodeComputer(program);
     }
+
+
 
     public boolean runWithInput(int noun, int verb) {
         setValue(1, noun);
@@ -61,6 +65,10 @@ public class IntcodeComputer {
 
     public int getValue(int index) {
         return memory.get(index);
+    }
+
+    public int getInput() {
+        return input.orElseThrow();
     }
 
     public int getOutput() {
@@ -111,6 +119,19 @@ public class IntcodeComputer {
                 int operand2 = computer.getValueAtIndexValue(index + 2);
                 int operand3 = computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 * operand2);
+            }
+        },
+        INPUT(3, 2) {
+            @Override
+            public void performOperation(IntcodeComputer computer, int index) {
+                int operand1 = computer.getValue(index + 1);
+                computer.setValue(operand1, computer.getInput());
+            }
+        },
+        OUTPUT(4, 2) {
+            @Override
+            public void performOperation(IntcodeComputer computer, int index) {
+                System.out.println("OUTPUT: " + computer.getValue(index + 1));
             }
         },
         HALT(99, 1) {
