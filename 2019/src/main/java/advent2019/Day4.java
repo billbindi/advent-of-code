@@ -20,7 +20,13 @@ public final class Day4 {
     }
 
     private static int part2() {
-        return 0;
+        int count = 0;
+        for (int password = MIN; password <= MAX; password++) {
+            if (adjacentDuplicateContained(password) && monotonicIncrease(password)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static boolean adjacentDuplicate(int password) {
@@ -41,5 +47,30 @@ public final class Day4 {
             }
         }
         return true;
+    }
+
+    private static boolean adjacentDuplicateContained(int password) {
+        int[] digits = String.valueOf(password).chars().map(Character::getNumericValue).toArray();
+        int pointer = 0;
+        while (pointer < digits.length - 1) {
+            int duplicates = numDuplicates(digits, pointer);
+            if (duplicates == 2) {
+                return true;
+            }
+            pointer += duplicates;
+        }
+        return false;
+    }
+
+    private static int numDuplicates(int[] digits, int pointer) {
+        int count = 1;
+        for (int index = pointer + 1; index < digits.length; index++) {
+            if (digits[index] == digits[pointer]) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
     }
 }
