@@ -3,12 +3,19 @@ package advent2019;
 import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import util.graph.Edge;
+import util.graph.Graph;
+import util.graph.GraphAlgorithms;
+import util.graph.Node;
+import util.graph.SimpleGraph;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public class Day6 {
@@ -44,17 +51,36 @@ public class Day6 {
 
     private static Multimap<Planet, Planet> parseOrbitalMap(Stream<String> lines) {
         Multimap<Planet, Planet> map = HashMultimap.create();
-        lines.forEach(line -> {
-            Iterator<String> splitIterator = Splitter.on(')').split(line).iterator();
-            String base = splitIterator.next();
-            String orbiter = splitIterator.next();
-            map.put(new Planet(base), new Planet(orbiter));
-        });
+        collectOrbitalMapParts(lines, (base, orbiter) -> map.put(new Planet(base), new Planet(orbiter)));
         return map;
     }
 
     private static int part2(Stream<String> lines) {
-        return 0;
+        Graph orbitalGraph = parseOrbitalMapToGraph(lines);
+        List<Node> path = GraphAlgorithms.findShortestPath(orbitalGraph, Node.of("YOU"), Node.of("SAN"));
+        return path.size() - 3; // edges between inner orbitals
+    }
+
+    private static Graph parseOrbitalMapToGraph(Stream<String> lines) {
+        Graph orbitalGraph = new SimpleGraph();
+        collectOrbitalMapParts(lines, (base, orbiter) -> {
+            Node baseNode = Node.of(base);
+            Node orbiterNode = Node.of(orbiter);
+            Edge edge = Edge.of(baseNode, orbiterNode);
+            orbitalGraph.addNode(baseNode);
+            orbitalGraph.addNode(orbiterNode);
+            orbitalGraph.addEdge(edge);
+        });
+        return orbitalGraph;
+    }
+
+    private static void collectOrbitalMapParts(Stream<String> lines, BiConsumer<String, String> orbitalPartsConsumer) {
+        lines.forEach(line -> {
+            Iterator<String> splitIterator = Splitter.on(')').split(line).iterator();
+            String base = splitIterator.next();
+            String orbiter = splitIterator.next();
+            orbitalPartsConsumer.accept(base, orbiter);
+        });
     }
 
     private record Planet(String name) {}

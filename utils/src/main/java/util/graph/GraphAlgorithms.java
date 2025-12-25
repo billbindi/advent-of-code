@@ -16,7 +16,7 @@ public final class GraphAlgorithms {
      * Dijkstra's algorithm for shortest path
      */
     public static List<Node> findShortestPath(Graph graph, Node start, Node end) {
-        if (!checkEdgeWeights(graph)) {
+        if (!checkEdgeWeights(graph) || !graph.nodes().contains(start) || !graph.nodes().contains(end)) {
             throw new IllegalArgumentException("Cannot compute path for graph with some weighted edges and some"
                     + " non-weighted edges.\nGraph: " + graph);
         } else {

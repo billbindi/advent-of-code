@@ -40,13 +40,13 @@ public class SimpleGraph implements Graph {
 
     @Override
     public void addNode(Node node) {
-        incidentEdgeMap.put(node, new HashSet<>());
+        incidentEdgeMap.putIfAbsent(node, new HashSet<>());
     }
 
     @Override
     public void addEdge(Edge edge) {
-        incidentEdgeMap.computeIfAbsent(edge.upper(), _unused -> new HashSet<>()).add(edge);
         incidentEdgeMap.computeIfAbsent(edge.lower(), _unused -> new HashSet<>()).add(edge);
+        incidentEdgeMap.computeIfAbsent(edge.upper(), _unused -> new HashSet<>()).add(edge);
     }
 
     @Override
@@ -76,5 +76,10 @@ public class SimpleGraph implements Graph {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public String toString() {
+        return incidentEdgeMap.toString();
     }
 }
