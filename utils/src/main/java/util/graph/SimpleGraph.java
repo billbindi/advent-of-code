@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * No weights, undirected.
+ */
 public class SimpleGraph implements Graph {
     private final Map<Node, Set<Edge>> incidentEdgeMap = new HashMap<>();
 
