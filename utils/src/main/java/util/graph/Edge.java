@@ -4,23 +4,32 @@ import org.immutables.value.Value;
 
 import java.util.Optional;
 
-@Value.Immutable
-@Value.Style(visibility = Value.Style.ImplementationVisibility.PACKAGE) // only build with provider factory methods
+// only allow building through factory methods to ensure proper ordering
+@Value.Immutable(builder = false)
 public interface Edge {
+    @Value.Parameter
     Node lower();
-    Node upper();
-    Optional<Integer> weight();
 
-    static Edge of(Node u, Node v, Optional<Integer> weight) {
-        if (u.compareTo(v) <= 0) {
-            return ImmutableEdge.builder().lower(u).upper(v).weight(weight).build();
-        } else {
-            return ImmutableEdge.builder().lower(v).upper(u).weight(weight).build();
-        }
-    }
+    @Value.Parameter
+    Node upper();
+
+    @Value.Parameter
+    Optional<Integer> weight();
 
     @Value.Derived
     default String name() {
         return lower().name() + ":" + upper().name();
+    }
+
+    static Edge of(Node u, Node v) {
+        return of(u, v, Optional.empty());
+    }
+
+    static Edge of(Node u, Node v, Optional<Integer> weight) {
+        if (u.compareTo(v) <= 0) {
+            return ImmutableEdge.of(u, v, weight);
+        } else {
+            return ImmutableEdge.of(v, u, weight);
+        }
     }
 }

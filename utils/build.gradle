@@ -10,6 +10,17 @@ dependencies {
   implementation(libs.guava)
   implementation(libs.jaxb)
 
+  testImplementation(libs.assertj)
+  testImplementation(libs.junit.api)
+  testRuntimeOnly(libs.junit.engine)
+  // version determined by junit already
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
   annotationProcessor(libs.immutables.value)
   compileOnly(libs.immutables.value.annotations)
+}
+
+test {
+  useJUnitPlatform()
+  testLogging.showStandardStreams = true // show System.out/err in console
 }
