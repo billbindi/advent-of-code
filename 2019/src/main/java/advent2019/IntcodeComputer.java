@@ -9,35 +9,42 @@ import java.util.Optional;
 
 public class IntcodeComputer {
     private final ImmutableList<Integer> initialMemory;
-    private final List<Integer> memory;
+    private final List<Integer> memory = new ArrayList<>();
+
     private boolean isComplete;
     private boolean isError;
-    private Optional<Integer> input = Optional.empty();
+    private boolean isStarted = false;
+
+    private final List<Integer> input;
+    private int inputPointer;
 
     public IntcodeComputer(List<Integer> initialMemory) {
-        this.initialMemory = ImmutableList.copyOf(initialMemory);
-        this.memory = new ArrayList<>();
-        reset();
+        this(initialMemory, new ArrayList<>());
     }
 
-    public IntcodeComputer(List<Integer> initialMemory, Optional<Integer> input) {
-        this(initialMemory);
+    public IntcodeComputer(List<Integer> initialMemory, List<Integer> input) {
+        this.initialMemory = ImmutableList.copyOf(initialMemory);
         this.input = input;
+        reset();
     }
 
     public void reset() {
         memory.clear();
         memory.addAll(initialMemory);
+
         isComplete = false;
         isError = false;
-        input = Optional.empty();
+        isStarted = false;
+
+        input.clear();
+        inputPointer = 0;
     }
 
     public static IntcodeComputer fromLine(String line) {
-        return fromLineWithInput(line, Optional.empty());
+        return fromLineWithInput(line, new ArrayList<>());
     }
 
-    public static IntcodeComputer fromLineWithInput(String line,  Optional<Integer> input) {
+    public static IntcodeComputer fromLineWithInput(String line,  List<Integer> input) {
         List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).toList();
         return new IntcodeComputer(program, input);
     }
@@ -46,8 +53,12 @@ public class IntcodeComputer {
         return new IntcodeComputer(new ArrayList<>(other.initialMemory));
     }
 
-    public void setInput(int input) {
-        this.input = Optional.of(input);
+    public void addInput(int inputValue) {
+        if (isStarted) {
+            throw new IllegalStateException("IntcodeComputer is already started");
+        } else {
+            input.add(inputValue);
+        }
     }
 
     public boolean runWithNounVerb(int noun, int verb) {
@@ -58,6 +69,7 @@ public class IntcodeComputer {
 
     // only works on 'memory' variable to keep initial state constant
     public boolean run() {
+        isStarted = true;
         int pointer = 0;
         while (!isComplete && pointer < memory.size()) {
             OpCode opCode = OpCode.fromValue(getValue(pointer));
@@ -83,7 +95,11 @@ public class IntcodeComputer {
     }
 
     public int getInput() {
-        return input.orElseThrow();
+        int value = input.get(inputPointer);
+        if (inputPointer < input.size() - 1) {
+            inputPointer++;
+        }
+        return value;
     }
 
     public int getOutput() {
