@@ -20,6 +20,11 @@ public class IntcodeComputer {
         reset();
     }
 
+    public IntcodeComputer(List<Integer> initialMemory, Optional<Integer> input) {
+        this(initialMemory);
+        this.input = input;
+    }
+
     public void reset() {
         memory.clear();
         memory.addAll(initialMemory);
@@ -29,8 +34,12 @@ public class IntcodeComputer {
     }
 
     public static IntcodeComputer fromLine(String line) {
+        return fromLineWithInput(line, Optional.empty());
+    }
+
+    public static IntcodeComputer fromLineWithInput(String line,  Optional<Integer> input) {
         List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).toList();
-        return new IntcodeComputer(program);
+        return new IntcodeComputer(program, input);
     }
 
     public static IntcodeComputer copyOf(IntcodeComputer other) {
