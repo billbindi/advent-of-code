@@ -48,12 +48,8 @@ public class IntcodeComputer {
                 new ArrayList<>(other.initialMemory), new ArrayList<>(other.input), other.outputConsumer);
     }
 
-    public void addInput(int inputValue) {
-        if (isStarted) {
-            throw new IllegalStateException("IntcodeComputer is already started");
-        } else {
-            input.add(inputValue);
-        }
+    public void clearInput() {
+        input.clear();
     }
 
     public boolean runWithNounVerb(int noun, int verb) {
@@ -197,7 +193,8 @@ public class IntcodeComputer {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
                 int operand1 = computer.getValue(index + 1);
-                computer.setValue(operand1, computer.getInput());
+                int inputValue = computer.getInput();
+                computer.setValue(operand1, inputValue);
                 return index + 2;
             }
         },
