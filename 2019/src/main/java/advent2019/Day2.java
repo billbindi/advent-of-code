@@ -17,14 +17,17 @@ public final class Day2 {
     }
 
     private static int part1(Stream<String> lines) {
-        IntcodeComputer computer = IntcodeComputer.fromLine(lines.findFirst().orElseThrow());
+        IntcodeComputer computer = IntcodeComputer.builder()
+                .initialMemory(lines.findFirst().orElseThrow())
+                .build();
         computer.runWithNounVerb(12, 2);
         return computer.getOutput();
     }
 
     private static int part2(Stream<String> lines) {
-        String line = lines.findFirst().orElseThrow();
-        IntcodeComputer computer = IntcodeComputer.fromLine(line);
+        IntcodeComputer computer = IntcodeComputer.builder()
+                .initialMemory(lines.findFirst().orElseThrow())
+                .build();
         for (int noun = 0; noun <= 99; noun++) {
             for (int verb = 0; verb <= 99; verb++) {
                 computer.reset();

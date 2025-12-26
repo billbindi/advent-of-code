@@ -1,30 +1,34 @@
 package advent2019;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class IntcodeComputer {
+    private static final Consumer<Integer> PRINTLN_OUTPUT_CONSUMER = val -> System.out.println("OUTPUT: " + val);
+
     private final ImmutableList<Integer> initialMemory;
     private final List<Integer> memory = new ArrayList<>();
 
-    private boolean isComplete;
-    private boolean isError;
+    private boolean isComplete = false;
+    private boolean isError = false;
     private boolean isStarted = false;
 
     private final List<Integer> input;
-    private int inputPointer;
+    private int inputPointer = 0;
 
-    public IntcodeComputer(List<Integer> initialMemory) {
-        this(initialMemory, new ArrayList<>());
-    }
+    private final Consumer<Integer> outputConsumer;
 
-    public IntcodeComputer(List<Integer> initialMemory, List<Integer> input) {
+    // only build through builder
+    private IntcodeComputer(List<Integer> initialMemory, List<Integer> input, Consumer<Integer> outputConsumer) {
         this.initialMemory = ImmutableList.copyOf(initialMemory);
         this.input = input;
+        this.outputConsumer = outputConsumer;
         reset();
     }
 
@@ -36,21 +40,12 @@ public class IntcodeComputer {
         isError = false;
         isStarted = false;
 
-        input.clear();
         inputPointer = 0;
     }
 
-    public static IntcodeComputer fromLine(String line) {
-        return fromLineWithInput(line, new ArrayList<>());
-    }
-
-    public static IntcodeComputer fromLineWithInput(String line,  List<Integer> input) {
-        List<Integer> program = Arrays.stream(line.split("\\s*,\\s*")).map(Integer::parseInt).toList();
-        return new IntcodeComputer(program, input);
-    }
-
     public static IntcodeComputer copyOf(IntcodeComputer other) {
-        return new IntcodeComputer(new ArrayList<>(other.initialMemory));
+        return new IntcodeComputer(
+                new ArrayList<>(other.initialMemory), new ArrayList<>(other.input), other.outputConsumer);
     }
 
     public void addInput(int inputValue) {
@@ -106,6 +101,10 @@ public class IntcodeComputer {
         return getValue(0);
     }
 
+    public void processOutput(int value) {
+        outputConsumer.accept(value);
+    }
+
     public int getValueAtIndexValue(int index) {
         return getValue(getValue(index));
     }
@@ -131,6 +130,46 @@ public class IntcodeComputer {
     private void markCompleteWithError() {
         isComplete = true;
         isError = true;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private List<Integer> initialMemory;
+        private List<Integer> input = new ArrayList<>(); // default empty
+        private Consumer<Integer> outputConsumer = PRINTLN_OUTPUT_CONSUMER; // default println
+
+        public Builder initialMemory(List<Integer> initialMemory) {
+            this.initialMemory = initialMemory;
+            return this;
+        }
+
+        public Builder initialMemory(String memoryString) {
+            this.initialMemory = Arrays.stream(memoryString.split("\\s*,\\s*")).map(Integer::parseInt).toList();
+            return this;
+        }
+
+        public Builder input(List<Integer> input) {
+            this.input = input;
+            return this;
+        }
+
+        public Builder input(int value) {
+            this.input.add(value);
+            return this;
+        }
+
+        public Builder outputConsumer(Consumer<Integer> outputConsumer) {
+            this.outputConsumer = outputConsumer;
+            return this;
+        }
+
+        public IntcodeComputer build() {
+            Preconditions.checkArgument(!initialMemory.isEmpty(), "initialMemory must not be empty");
+            return new IntcodeComputer(initialMemory, input, outputConsumer);
+        }
     }
 
     public enum Instruction {
@@ -165,7 +204,7 @@ public class IntcodeComputer {
         OUTPUT(4, 2) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                System.out.println("OUTPUT: " + getValue(computer, index + 1, parameterModes[0]));
+                computer.processOutput(getValue(computer, index + 1, parameterModes[0]));
                 return index + 2;
             }
         },

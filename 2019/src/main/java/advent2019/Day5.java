@@ -3,7 +3,6 @@ package advent2019;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.stream.Stream;
 
 public final class Day5 {
@@ -16,13 +15,19 @@ public final class Day5 {
     }
 
     private static int part1(Stream<String> lines) {
-        IntcodeComputer computer = IntcodeComputer.fromLineWithInput(lines.findFirst().orElseThrow(), List.of(1));
+        IntcodeComputer computer = IntcodeComputer.builder()
+                .initialMemory(lines.findFirst().orElseThrow())
+                .input(1)
+                .build();
         computer.run();
         return computer.getOutput();
     }
 
     private static int part2(Stream<String> lines) {
-        IntcodeComputer computer = IntcodeComputer.fromLineWithInput(lines.findFirst().orElseThrow(), List.of(5));
+        IntcodeComputer computer = IntcodeComputer.builder()
+                .initialMemory(lines.findFirst().orElseThrow())
+                .input(5)
+                .build();
         computer.run();
         return computer.getOutput();
     }
