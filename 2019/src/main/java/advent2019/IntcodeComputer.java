@@ -33,6 +33,10 @@ public class IntcodeComputer {
         return new IntcodeComputer(program);
     }
 
+    public static IntcodeComputer copyOf(IntcodeComputer other) {
+        return new IntcodeComputer(new ArrayList<>(other.initialMemory));
+    }
+
     public void setInput(int input) {
         this.input = Optional.of(input);
     }
