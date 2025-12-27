@@ -22,6 +22,8 @@ public class IntcodeComputer {
     private final List<Long> input;
     private int inputPointer = 0;
 
+    private int relativeBase = 0;
+
     private final Consumer<Long> outputConsumer;
 
     // only build through builder
@@ -41,6 +43,8 @@ public class IntcodeComputer {
         isStarted = false;
 
         inputPointer = 0;
+
+        relativeBase = 0;
     }
 
     public static IntcodeComputer copyOf(IntcodeComputer other) {
@@ -118,6 +122,14 @@ public class IntcodeComputer {
     // accessible for testing
     void setValue(int index, long value) {
         memory.set(index, value);
+    }
+
+    public int getRelativeBase() {
+        return relativeBase;
+    }
+
+    public void modifyRelativeBase(int incrementAmount) {
+        relativeBase += incrementAmount;
     }
 
     // check the pointer is in a spot to allow for an operation
@@ -249,6 +261,14 @@ public class IntcodeComputer {
                 return index + 4;
             }
         },
+        SET_RELATIVE_BASE(9, 2) {
+            @Override
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                computer.modifyRelativeBase((int) operand1);
+                return index + 2;
+            }
+        },
         HALT(99, 1) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
@@ -280,6 +300,7 @@ public class IntcodeComputer {
             return switch (mode) {
                 case 0 -> computer.getValueAtIndexValue(index);
                 case 1 -> computer.getValue(index);
+                case 2 ->  computer.getValue(computer.getRelativeBase() + index);
                 default -> throw new IllegalStateException("Invalid mode " + mode);
             };
         }
