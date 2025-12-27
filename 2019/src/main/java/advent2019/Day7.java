@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 @SuppressWarnings("UnstableApiUsage") // guava permutations
@@ -20,12 +20,12 @@ public final class Day7 {
         System.out.println(part2(Files.lines(INPUT_PATH)));
     }
 
-    private static int part1(Stream<String> lines) {
+    private static long part1(Stream<String> lines) {
         Collection<List<Integer>> permutations = Collections2.permutations(List.of(0, 1, 2, 3, 4));
-        int maxThrust = Integer.MIN_VALUE;
+        long maxThrust = Long.MIN_VALUE;
         String computerString = lines.findFirst().orElseThrow();
         for (List<Integer> permutation : permutations) {
-            int thrust = tryPermutation(computerString, permutation);
+            long thrust = tryPermutation(computerString, permutation);
             if (thrust > maxThrust) {
                 maxThrust = thrust;
             }
@@ -33,8 +33,8 @@ public final class Day7 {
         return maxThrust;
     }
 
-    private static int tryPermutation(String computerString, List<Integer> phaseSignals) {
-        AtomicInteger outputValue = new AtomicInteger(0);
+    private static long tryPermutation(String computerString, List<Integer> phaseSignals) {
+        AtomicLong outputValue = new AtomicLong(0);
         for (int phaseSignal : phaseSignals) {
             IntcodeComputer computer = IntcodeComputer.builder()
                     .initialMemory(computerString)

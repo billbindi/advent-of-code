@@ -16,7 +16,7 @@ public final class Day2 {
         System.out.println(part2(Files.lines(INPUT_PATH)));
     }
 
-    private static int part1(Stream<String> lines) {
+    private static long part1(Stream<String> lines) {
         IntcodeComputer computer = IntcodeComputer.builder()
                 .initialMemory(lines.findFirst().orElseThrow())
                 .build();

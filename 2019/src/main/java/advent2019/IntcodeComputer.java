@@ -10,22 +10,22 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class IntcodeComputer {
-    private static final Consumer<Integer> PRINTLN_OUTPUT_CONSUMER = val -> System.out.println("OUTPUT: " + val);
+    private static final Consumer<Long> PRINTLN_OUTPUT_CONSUMER = val -> System.out.println("OUTPUT: " + val);
 
-    private final ImmutableList<Integer> initialMemory;
-    private final List<Integer> memory = new ArrayList<>();
+    private final ImmutableList<Long> initialMemory;
+    private final List<Long> memory = new ArrayList<>();
 
     private boolean isComplete = false;
     private boolean isError = false;
     private boolean isStarted = false;
 
-    private final List<Integer> input;
+    private final List<Long> input;
     private int inputPointer = 0;
 
-    private final Consumer<Integer> outputConsumer;
+    private final Consumer<Long> outputConsumer;
 
     // only build through builder
-    private IntcodeComputer(List<Integer> initialMemory, List<Integer> input, Consumer<Integer> outputConsumer) {
+    private IntcodeComputer(List<Long> initialMemory, List<Long> input, Consumer<Long> outputConsumer) {
         this.initialMemory = ImmutableList.copyOf(initialMemory);
         this.input = input;
         this.outputConsumer = outputConsumer;
@@ -63,7 +63,7 @@ public class IntcodeComputer {
         isStarted = true;
         int pointer = 0;
         while (!isComplete && pointer < memory.size()) {
-            OpCode opCode = OpCode.fromValue(getValue(pointer));
+            OpCode opCode = OpCode.fromValue((int) getValue(pointer));
             Optional<Instruction> instruction = Instruction.fromOpCode(opCode.code());
             if (instruction.isPresent()) {
                 // move pointer by proper amount for operation
@@ -81,36 +81,36 @@ public class IntcodeComputer {
         return isError;
     }
 
-    public int getValue(int index) {
+    public long getValue(int index) {
         return memory.get(index);
     }
 
-    public int getInput() {
-        int value = input.get(inputPointer);
+    public long getInput() {
+        long value = input.get(inputPointer);
         if (inputPointer < input.size() - 1) {
             inputPointer++;
         }
         return value;
     }
 
-    public int getOutput() {
+    public long getOutput() {
         return getValue(0);
     }
 
-    public void processOutput(int value) {
+    public void processOutput(long value) {
         outputConsumer.accept(value);
     }
 
-    public int getValueAtIndexValue(int index) {
-        return getValue(getValue(index));
+    public long getValueAtIndexValue(int index) {
+        return getValue((int) getValue(index));
     }
 
-    public List<Integer> getRawProgram() {
+    public List<Long> getRawProgram() {
         return memory;
     }
 
     // accessible for testing
-    void setValue(int index, int value) {
+    void setValue(int index, long value) {
         memory.set(index, value);
     }
 
@@ -133,31 +133,31 @@ public class IntcodeComputer {
     }
 
     public static class Builder {
-        private List<Integer> initialMemory;
-        private List<Integer> input = new ArrayList<>(); // default empty
-        private Consumer<Integer> outputConsumer = PRINTLN_OUTPUT_CONSUMER; // default println
+        private List<Long> initialMemory;
+        private List<Long> input = new ArrayList<>(); // default empty
+        private Consumer<Long> outputConsumer = PRINTLN_OUTPUT_CONSUMER; // default println
 
-        public Builder initialMemory(List<Integer> initialMemory) {
+        public Builder initialMemory(List<Long> initialMemory) {
             this.initialMemory = initialMemory;
             return this;
         }
 
         public Builder initialMemory(String memoryString) {
-            this.initialMemory = Arrays.stream(memoryString.split("\\s*,\\s*")).map(Integer::parseInt).toList();
+            this.initialMemory = Arrays.stream(memoryString.split("\\s*,\\s*")).map(Long::parseLong).toList();
             return this;
         }
 
-        public Builder input(List<Integer> input) {
+        public Builder input(List<Long> input) {
             this.input = input;
             return this;
         }
 
-        public Builder input(int value) {
+        public Builder input(long value) {
             this.input.add(value);
             return this;
         }
 
-        public Builder outputConsumer(Consumer<Integer> outputConsumer) {
+        public Builder outputConsumer(Consumer<Long> outputConsumer) {
             this.outputConsumer = outputConsumer;
             return this;
         }
@@ -172,9 +172,9 @@ public class IntcodeComputer {
         ADDITION(1, 4) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = computer.getValue(index + 3);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                long operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = (int) computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 + operand2);
                 return index + 4;
             }
@@ -182,9 +182,9 @@ public class IntcodeComputer {
         MULTIPLICATION(2, 4) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = computer.getValue(index + 3);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                long operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = (int) computer.getValue(index + 3);
                 computer.setValue(operand3, operand1 * operand2);
                 return index + 4;
             }
@@ -192,8 +192,8 @@ public class IntcodeComputer {
         INPUT(3, 2) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
-                int operand1 = computer.getValue(index + 1);
-                int inputValue = computer.getInput();
+                int operand1 = (int) computer.getValue(index + 1);
+                long inputValue = computer.getInput();
                 computer.setValue(operand1, inputValue);
                 return index + 2;
             }
@@ -208,25 +208,25 @@ public class IntcodeComputer {
         JUMP_IF_TRUE(5, 3) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = (int) getValue(computer, index + 2, parameterModes[1]);
                 return operand1 == 0 ? index + 3 : operand2;
             }
         },
         JUMP_IF_FALSE(6, 3) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                int operand2 = (int) getValue(computer, index + 2, parameterModes[1]);
                 return operand1 == 0 ? operand2 : index + 3;
             }
         },
         LESS_THAN(7, 4) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = computer.getValue(index + 3);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                long operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = (int) computer.getValue(index + 3);
                 int result = operand1 < operand2 ? 1 : 0;
                 computer.setValue(operand3, result);
                 return index + 4;
@@ -235,9 +235,9 @@ public class IntcodeComputer {
         EQUALS(8, 4) {
             @Override
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
-                int operand1 = getValue(computer, index + 1, parameterModes[0]);
-                int operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = computer.getValue(index + 3);
+                long operand1 = getValue(computer, index + 1, parameterModes[0]);
+                long operand2 = getValue(computer, index + 2, parameterModes[1]);
+                int operand3 = (int) computer.getValue(index + 3);
                 int result = operand1 == operand2 ? 1 : 0;
                 computer.setValue(operand3, result);
                 return index + 4;
@@ -270,7 +270,7 @@ public class IntcodeComputer {
             }
         }
 
-        private static int getValue(IntcodeComputer computer, int index, int mode) {
+        private static long getValue(IntcodeComputer computer, int index, int mode) {
             return switch (mode) {
                 case 0 -> computer.getValueAtIndexValue(index);
                 case 1 -> computer.getValue(index);
@@ -300,12 +300,12 @@ public class IntcodeComputer {
                 }
             }
 
-        private static int[] getParameterModes(int value) {
+        private static int[] getParameterModes(long value) {
             // purposefully go right to left when parsing
-            List<Integer> parameters = new ArrayList<>();
-            int remainingValue = value;
+            List<Long> parameters = new ArrayList<>();
+            long remainingValue = value;
             while (remainingValue > 0) {
-                int mode = remainingValue % 10;
+                long mode = remainingValue % 10;
                 if (mode > 1) {
                     throw new IllegalArgumentException("Invalid mode found " + mode + " from value " + value);
                 }
@@ -314,14 +314,14 @@ public class IntcodeComputer {
             }
 
             // add a few trailing 0s for good measure
-            parameters.add(0);
-            parameters.add(0);
-            parameters.add(0);
-            parameters.add(0);
-            parameters.add(0);
+            parameters.add(0L);
+            parameters.add(0L);
+            parameters.add(0L);
+            parameters.add(0L);
+            parameters.add(0L);
 
             // convert to int[]
-            return parameters.stream().mapToInt(Integer::intValue).toArray();
+            return parameters.stream().mapToInt(Long::intValue).toArray();
         }
     }
 }
