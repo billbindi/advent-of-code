@@ -86,12 +86,7 @@ public class IntcodeComputer {
     }
 
     public long getValue(int index) {
-        if (index > memory.size()) {
-            ((ArrayList<?>) memory).ensureCapacity(index);
-            while (memory.size() <= index) {
-                memory.add(0L);
-            }
-        }
+        ensureCapacity(index);
         return memory.get(index);
     }
 
@@ -111,17 +106,23 @@ public class IntcodeComputer {
         outputConsumer.accept(value);
     }
 
-    public long getValueAtIndexValue(int index) {
-        return getValue((int) getValue(index));
-    }
-
     public List<Long> getRawProgram() {
         return memory;
     }
 
     // accessible for testing
     void setValue(int index, long value) {
+        ensureCapacity(index);
         memory.set(index, value);
+    }
+
+    void ensureCapacity(int capacity) {
+        if (capacity >= memory.size()) {
+            ((ArrayList<?>) memory).ensureCapacity(capacity);
+            while (memory.size() <= capacity) {
+                memory.add(0L);
+            }
+        }
     }
 
     public int getRelativeBase() {
@@ -192,7 +193,7 @@ public class IntcodeComputer {
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 long operand1 = getValue(computer, index + 1, parameterModes[0]);
                 long operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = (int) computer.getValue(index + 3);
+                int operand3 = getIndexValue(computer, index + 3, parameterModes[2]);
                 computer.setValue(operand3, operand1 + operand2);
                 return index + 4;
             }
@@ -202,15 +203,15 @@ public class IntcodeComputer {
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 long operand1 = getValue(computer, index + 1, parameterModes[0]);
                 long operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = (int) computer.getValue(index + 3);
+                int operand3 = getIndexValue(computer, index + 3, parameterModes[2]);
                 computer.setValue(operand3, operand1 * operand2);
                 return index + 4;
             }
         },
         INPUT(3, 2) {
             @Override
-            public int performOperation(IntcodeComputer computer, int index, int[] _parameterModes) {
-                int operand1 = (int) computer.getValue(index + 1);
+            public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
+                int operand1 = getIndexValue(computer, index + 1, parameterModes[0]);
                 long inputValue = computer.getInput();
                 computer.setValue(operand1, inputValue);
                 return index + 2;
@@ -244,7 +245,7 @@ public class IntcodeComputer {
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 long operand1 = getValue(computer, index + 1, parameterModes[0]);
                 long operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = (int) computer.getValue(index + 3);
+                int operand3 = getIndexValue(computer, index + 3, parameterModes[2]);
                 int result = operand1 < operand2 ? 1 : 0;
                 computer.setValue(operand3, result);
                 return index + 4;
@@ -255,7 +256,7 @@ public class IntcodeComputer {
             public int performOperation(IntcodeComputer computer, int index, int[] parameterModes) {
                 long operand1 = getValue(computer, index + 1, parameterModes[0]);
                 long operand2 = getValue(computer, index + 2, parameterModes[1]);
-                int operand3 = (int) computer.getValue(index + 3);
+                int operand3 = getIndexValue(computer, index + 3, parameterModes[2]);
                 int result = operand1 == operand2 ? 1 : 0;
                 computer.setValue(operand3, result);
                 return index + 4;
@@ -298,9 +299,17 @@ public class IntcodeComputer {
 
         private static long getValue(IntcodeComputer computer, int index, int mode) {
             return switch (mode) {
-                case 0 -> computer.getValueAtIndexValue(index);
+                case 0 -> computer.getValue((int) computer.getValue(index));
                 case 1 -> computer.getValue(index);
-                case 2 ->  computer.getValue(computer.getRelativeBase() + index);
+                case 2 ->  computer.getValue(computer.getRelativeBase() + (int) computer.getValue(index));
+                default -> throw new IllegalStateException("Invalid mode " + mode);
+            };
+        }
+
+        private static int getIndexValue(IntcodeComputer computer, int index, int mode) {
+            return switch (mode) {
+                case 0, 1 -> (int) computer.getValue(index);
+                case 2 ->  computer.getRelativeBase() + (int) computer.getValue(index);
                 default -> throw new IllegalStateException("Invalid mode " + mode);
             };
         }
@@ -333,7 +342,7 @@ public class IntcodeComputer {
             long remainingValue = value;
             while (remainingValue > 0) {
                 long mode = remainingValue % 10;
-                if (mode > 1) {
+                if (mode > 2) {
                     throw new IllegalArgumentException("Invalid mode found " + mode + " from value " + value);
                 }
                 parameters.add(mode);
