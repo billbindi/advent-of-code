@@ -23,5 +23,10 @@ public final class Day9 {
     }
 
     private static void part2(Stream<String> lines) {
+        IntcodeComputer computer = IntcodeComputer.builder()
+                .initialMemory(lines.findFirst().orElseThrow())
+                .input(2)
+                .build();
+        computer.run();
     }
 }
