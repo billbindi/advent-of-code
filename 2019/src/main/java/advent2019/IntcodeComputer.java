@@ -82,6 +82,12 @@ public class IntcodeComputer {
     }
 
     public long getValue(int index) {
+        if (index > memory.size()) {
+            ((ArrayList<?>) memory).ensureCapacity(index);
+            while (memory.size() <= index) {
+                memory.add(0L);
+            }
+        }
         return memory.get(index);
     }
 
